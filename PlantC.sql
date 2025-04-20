@@ -3,7 +3,7 @@ Create DATABASE lperez5484_db_DatabaseProject;
 USE lperez5484_db_DatabaseProject;
 Create table Customer
 (
-    Cus_ID int AUTO_INCREMENT Primary Key,
+    Cus_ID int AUTO_INCREMENT Primary Key NOT NULL,
     Cus_FNAME VARCHAR(50),
     Cus_LNAME VARCHAR(50),
     Cus_PHONE VARCHAR(15),
@@ -11,44 +11,56 @@ Create table Customer
     Cus_AREA_CODE INT);
 
 Create table Invoice (
-Invo_ID int AUTO_INCREMENT Primary Key,
+Invo_ID int AUTO_INCREMENT Primary Key NOT NULL,
 Cus_ID int,
 INV_DATE date,
-INV_TOTAL decimal(8,2),
+INV_Status varchar(50),
+Payment_Method varchar(50),
 FOREIGN KEY (Cus_ID) REFERENCES Customer(Cus_ID)
 );
+Create table Invoice_History(
+InvHist_ID int AUTO_INCREMENT Primary Key NOT NULL,
+Invo_ID int NOT NULL,
+Cus_ID int NOT NULL,
+INV_Status varchar(50),
+LastChanged date,
+FOREIGN KEY (Cus_ID) REFERENCES Customer(Cus_ID),
+FOREIGN KEY (Invo_ID) references Invoice(Invo_ID));
+
+
 Create table Vendor
 (
-    V_ID      int AUTO_INCREMENT Primary Key,
+    V_ID      int AUTO_INCREMENT Primary Key NOT NULL,
     V_NAME    VARCHAR(50),
     V_CONTACT VARCHAR(50),
     V_PHONE   VARCHAR(50)
 );
 Create table Products(
-P_CODE int AUTO_INCREMENT Primary Key,
+P_CODE int AUTO_INCREMENT Primary Key NOT NULL,
 P_DESCRIPTION VARCHAR(200),
 V_ID int NOT NULL,
 P_TYPE VARCHAR(50),
 P_DISCOUNT Decimal(5,2),
 FOREIGN KEY  (V_ID) REFERENCES Vendor(V_ID));
 Create table Inventory(
-    INV_ID int AUTO_INCREMENT Primary Key,
+    INV_ID int AUTO_INCREMENT Primary Key NOT NULL,
     P_CODE int,
     INV_QUANTITY int,
     INV_INSTOCK int,
     FOREIGN KEY (P_CODE) REFERENCES Products(P_CODE));
 
-Create table Line(
-    INV_ID Int NOT NULL,
+Create table Invoice_Line(
+    Line_ID int AUTO_INCREMENT Primary Key NOT NULL,
+    Invo_ID Int NOT NULL,
     P_CODE int NOT NULL,
-    P_Amount int,
-    Line_Price Decimal(8,2),
-    FOREIGN KEY (INV_ID) REFERENCES Inventory(INV_ID),
-    Constraint Line_INV_ID Primary Key (INV_ID),
+    Quantity int,
+    Unit_Price Decimal(8,2),
+    ##Line_Total will be calculated.
+    FOREIGN KEY (Invo_ID) REFERENCES Invoice(Invo_ID),
     FOREIGN KEY (P_CODE) REFERENCES Products(P_CODE));
 
 Create table Incubator(
-    INC_ID INT AUTO_INCREMENT Primary Key,
+    INC_ID int AUTO_INCREMENT Primary Key NOT NULL,
     Cus_ID INT NOT NULL,
     INC_START_DATE DATE,
     INC_END_DATE DATE,
@@ -87,7 +99,7 @@ Create table Materials(
 
 Create table Conditions
 (
-    Condition_ID   int AUTO_INCREMENT Primary Key,
+    Condition_ID   int AUTO_INCREMENT Primary Key NOT NULL,
     Condition_Name varchar(50),
     Condition_Type varchar(50),
     Severity_Level varchar(50),
@@ -95,21 +107,20 @@ Create table Conditions
 );
 Create table Region(
     ##Region_ID is marked as an FK1 in the erd, but it's not connected to Plants
-    Region_ID int NOT NULL,
+    Region_ID int AUTO_INCREMENT Primary Key NOT NULL,
     Region_Name varchar(50),
     Region_Type varchar(50),
-    Region_Restrictions varchar(200),
-    Constraint Region_ID PRIMARY KEY (Region_ID));
+    Region_Restrictions varchar(200));
+
 Create table Plant_Region_Availability(
-    Availability_ID int not null,
+    Availability_ID int AUTO_INCREMENT Primary Key NOT NULL,
     Plant_ID int not null,
     Region_ID int not null,
     Is_Allowed varchar(50),
     FOREIGN KEY (Plant_ID) references Plants(Plant_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (Region_ID) references Region(Region_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-    Constraint Availability_ID Primary Key (Availability_ID));
+    FOREIGN KEY (Region_ID) references Region(Region_ID) ON DELETE CASCADE ON UPDATE CASCADE);
 Create table Plant_Region_Restriction(
-    Restriction_ID int not null,
+    Restriction_ID int AUTO_INCREMENT Primary Key NOT NULL,
     Plant_ID int not null,
     Region_ID int not null,
     Condition_ID int NOT NULL,
@@ -119,6 +130,11 @@ Create table Plant_Region_Restriction(
     FOREIGN KEY (Region_ID) references Region(Region_ID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (Condition_ID) references Conditions(Condition_ID) ON DELETE CASCADE ON UPDATE CASCADE,
     Constraint Restriction_ID Primary Key (Restriction_ID));
+
+Create view Invoice_Total as
+    SELECT
+        Invo_ID, Cus_ID,INV_DATE, SUM(Quantity*Unit_Price) AS Total
+FROM Invoice JOIN Invoice_Line using (Invo_ID) GROUP BY Invo_ID, Cus_ID, INV_DATE;
 
 
 
