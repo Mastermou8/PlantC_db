@@ -2,6 +2,7 @@
 <project version="4">
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/PlantC.sql" dialect="MariaDB" />
+    <file url="file://$PROJECT_DIR$/Test.sql" dialect="MariaDB" />
     <file url="PROJECT" dialect="MariaDB" />
   </component>
 </project>

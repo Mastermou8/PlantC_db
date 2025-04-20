@@ -649,10 +649,10 @@ INSERT INTO Invoice (Invo_ID, Cus_ID, INV_DATE, INV_Status, Payment_Method) VALU
 
 INSERT INTO Invoice_Line (Invo_ID, P_CODE, Quantity, Unit_Price) VALUES
  (1,   1,  2,  19.99),
- (1,   5,  1,  49.50),
+ (1,   5,  1,  50.50),
  (2,   3,  4,   5.00),
  (3,   2,  1,  12.75),
- (3,   4,  2,   7.25),
+ (3,   4,  2,   75.25),
  (4,   6,  3,  15.00),
  (5,   1,  1,  19.99),
  (6,   7,  5,  25.00),
@@ -712,6 +712,8 @@ INSERT INTO Plant_Region_Restriction (Plant_ID,Region_ID,Condition_ID,Is_Active,
 
 
 
+ALTER TABLE Inventory
+Add column    INV_LAST_RESTOCKDATE Date DEFAULT CURRENT_DATE AFTER INV_QUANTITY;
 
 
 
