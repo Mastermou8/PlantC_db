@@ -128,8 +128,8 @@ Create table Plant_Region_Restriction(
     Notes varchar(500),
     FOREIGN KEY (Plant_ID) references Plants(Plant_ID) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (Region_ID) references Region(Region_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (Condition_ID) references Conditions(Condition_ID) ON DELETE CASCADE ON UPDATE CASCADE,
-    Constraint Restriction_ID Primary Key (Restriction_ID));
+    FOREIGN KEY (Condition_ID) references Conditions(Condition_ID) ON DELETE CASCADE ON UPDATE CASCADE);
+
 
 Create view Invoice_Total as
     SELECT
